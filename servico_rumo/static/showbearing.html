@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Orientação do Robô</title>
+<script>
+var wsUri = (window.location.protocol=='https:'&&'wss://'||'ws://')+window.location.host+"/wsctrl";
+var canvas;
+var robot_arrow = new Image();
+robot_arrow.src = "./robot_arrow2.png"
+var socket = new WebSocket(wsUri);
+socket.addEventListener('open', function (event) {
+    console.log('Connection estabilshed!');
+    socket.send("ack");
+});
+
+
+
+
+socket.addEventListener('close', function (event) {
+    console.log('Connection closed!');
+});
+
+socket.onmessage = function (event) {
+    //console.log('Message from server ', event.data);
+    const data = JSON.parse(event.data);
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save();
+    //ctx.beginPath();
+    angle = data[1];
+    ctx.translate(canvas.width/2,canvas.height/2);
+    ctx.rotate(angle);
+    ctx.drawImage(robot_arrow, -robot_arrow.width/2, -robot_arrow.height/2);
+    ctx.restore();
+    //ctx.fillStyel = 'black';
+    /*data["coordenadas"].forEach(function(coord) {
+        ctx.moveTo(coord[0]+radius, 400-coord[1]);
+        ctx.arc(coord[0], 400-coord[1], radius, 0, 2 * Math.PI);
+    });*/
+    //ctx.fill();
+    //ctx.stroke();
+    socket.send("ack");
+}
+
+window.addEventListener("load", function(e) {
+    canvas = document.getElementById("mycanvas");
+});
+
+</script>
+</head>
+<html>
+<body>
+<canvas id="mycanvas" width="750" height="750" style="border:1px solid #000000; background: url('./rose.png'); background-repeat: no-repeat; background-size: 749px 749px">
+Your browser does not support the HTML canvas tag.
+</canvas>
+</body>
+</html>
